@@ -81,6 +81,8 @@ def filtro_media(image):
 
                 media_value = np.ceil(media_value)
                 image_filtered[i, j, channel] = media_value
+    
+    return image_filtered
 
 def filtros_imagenes(filtro):
     global image
