@@ -6,6 +6,7 @@ import imutils
 import numpy as np
 import customtkinter
 
+
 def elegir_imagen():
     path_image = filedialog.askopenfilename(filetypes=[
         ("image", ".jpeg"),
@@ -27,11 +28,12 @@ def elegir_imagen():
 
         lblOutputImage.configure(image="")
         selected.set(0)
-        
+
+
 def filtro_mediana(image):
     height, width, channels = image.shape
     image_filtered = np.zeros_like(image)
-    
+
     for channel in range(channels):
         for i in range(height):
             for j in range(width):
@@ -49,22 +51,21 @@ def filtro_mediana(image):
                     median_value = (neighbors_sorted[neighbors_len // 2 - 1] + neighbors_sorted[neighbors_len // 2]) / 2
                 else:
                     median_value = neighbors_sorted[neighbors_len // 2]
-                
+
                 median_value = np.ceil(median_value)
                 image_filtered[i, j, channel] = median_value
 
     return image_filtered
+
 
 def filtro_media(image):
     height, width, channels = image.shape
     image_filtered = np.zeros_like(image)
 
     mask = np.array([[1, 1, 1],
-                  [1, 1, 1],
-                  [1, 1, 1]])
-    
-    media_mask = 1/9*mask
-    
+                     [1, 1, 1],
+                     [1, 1, 1]])
+
     for channel in range(channels):
         for i in range(height):
             for j in range(width):
@@ -74,50 +75,45 @@ def filtro_media(image):
                 end_j = min(width, j + 2)
 
                 neighbors = image[start_i:end_i, start_j:end_j, channel]
-                
-                sum_neighbors = np.sum(neighbors)
+                media_value = np.sum(neighbors * mask[:end_i - start_i, :end_j - start_j]) / 9
+                image_filtered[i, j, channel] = np.round(media_value)
 
-                media_value = sum_neighbors*media_mask
-
-                media_value = np.ceil(media_value)
-                image_filtered[i, j, channel] = media_value
-    
     return image_filtered
+
 
 def filtros_imagenes(filtro):
     global image
     global lblOutputImage
-    
+
     if image is not None:
         if filtro == 'Media':
-            image_filtered=filtro_media(image)
+            image_filtered = filtro_media(image)
             im = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
             img = ImageTk.PhotoImage(image=im)
-            
+
             lblOutputImage.configure(image=img)
             lblOutputImage.image = img
         if filtro == 'Mediana':
             image_filtered = filtro_mediana(image)
             im = Image.fromarray(cv2.cvtColor(image_filtered, cv2.COLOR_BGR2RGB))
             img = ImageTk.PhotoImage(image=im)
-            
+
             lblOutputImage.configure(image=img)
             lblOutputImage.image = img
         if filtro == 'Sobel':
             print(image)
             im = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
             img = ImageTk.PhotoImage(image=im)
-            
+
             lblOutputImage.configure(image=img)
             lblOutputImage.image = img
         if filtro == 'Laplaciano':
             print(image)
             im = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
             img = ImageTk.PhotoImage(image=im)
-            
+
             lblOutputImage.configure(image=img)
             lblOutputImage.image = img
-
 
 
 customtkinter.set_appearance_mode("dark")
