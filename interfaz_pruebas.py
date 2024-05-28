@@ -55,13 +55,40 @@ def filtro_mediana(image):
 
     return image_filtered
 
+def filtro_media(image):
+    height, width, channels = image.shape
+    image_filtered = np.zeros_like(image)
+
+    mask = np.array([[1, 1, 1],
+                  [1, 1, 1],
+                  [1, 1, 1]])
+    
+    media_mask = 1/9*mask
+    
+    for channel in range(channels):
+        for i in range(height):
+            for j in range(width):
+                start_i = max(0, i - 1)
+                end_i = min(height, i + 2)
+                start_j = max(0, j - 1)
+                end_j = min(width, j + 2)
+
+                neighbors = image[start_i:end_i, start_j:end_j, channel]
+                
+                sum_neighbors = np.sum(neighbors)
+
+                media_value = sum_neighbors*media_mask
+
+                media_value = np.ceil(media_value)
+                image_filtered[i, j, channel] = media_value
+
 def filtros_imagenes(filtro):
     global image
     global lblOutputImage
     
     if image is not None:
         if filtro == 'Media':
-            print(image)
+            image_filtered=filtro_media(image)
             im = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
             img = ImageTk.PhotoImage(image=im)
             
